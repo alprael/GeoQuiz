@@ -17,7 +17,7 @@ public class QuizActivity extends AppCompatActivity {
   private ImageButton mPreviousButton;
   private TextView mQuestionTextView;
 
-  private Question[] mQuestionBank = new Question[] {
+  private Question[] mQuestionBank = new Question[]{
       new Question(R.string.question_australia, true),
       new Question(R.string.question_oceans, true),
       new Question(R.string.question_mideast, false),
@@ -41,7 +41,7 @@ public class QuizActivity extends AppCompatActivity {
     mTrueButton.setOnClickListener(new OnClickListener() {
       @Override
       public void onClick(View v) {
-       // Toast.makeText(QuizActivity.this, R.string.correct_toast, Toast.LENGTH_SHORT).show();
+        // Toast.makeText(QuizActivity.this, R.string.correct_toast, Toast.LENGTH_SHORT).show();
         checkAnswer(true);
       }
     });
@@ -49,7 +49,7 @@ public class QuizActivity extends AppCompatActivity {
     mFalseButton.setOnClickListener(new OnClickListener() {
       @Override
       public void onClick(View v) {
-       // Toast.makeText(QuizActivity.this, R.string.incorrect_toast, Toast.LENGTH_SHORT).show();
+        // Toast.makeText(QuizActivity.this, R.string.incorrect_toast, Toast.LENGTH_SHORT).show();
         checkAnswer(false);
       }
     });
@@ -71,16 +71,16 @@ public class QuizActivity extends AppCompatActivity {
     mPreviousButton.setOnClickListener(new OnClickListener() {
       @Override
       public void onClick(View v) {
-        mCurrentIndex = (mCurrentIndex - 1) % mQuestionBank.length;
-        //int question = mQuestionBank[mCurrentIndex].getmTextResId();
-        //mQuestionTextView.setText(question);
+        if (mCurrentIndex == 0) {
+          mCurrentIndex = mQuestionBank.length - 1;
+        } else {
+          mCurrentIndex = mCurrentIndex - 1;
+        }
         updateQuestion();
       }
     });
-
-    updateQuestion();
-
   }
+
 
   private void updateQuestion() {
     int question = mQuestionBank[mCurrentIndex].getmTextResId();
