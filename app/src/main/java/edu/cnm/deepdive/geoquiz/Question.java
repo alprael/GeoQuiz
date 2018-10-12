@@ -11,18 +11,22 @@ public class Question {
   }
 
   public int getmTextResId() {
+
     return mTextResId;
   }
 
   public void setmTextResId(int mTextResId) {
+
     this.mTextResId = mTextResId;
   }
 
   public boolean ismAnswerTrue() {
+
     return mAnswerTrue;
   }
 
   public void setmAnswerTrue(boolean mAnswerTrue) {
+
     this.mAnswerTrue = mAnswerTrue;
   }
 }
