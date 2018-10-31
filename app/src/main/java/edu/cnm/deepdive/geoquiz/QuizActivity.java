@@ -2,7 +2,6 @@ package edu.cnm.deepdive.geoquiz;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,7 +11,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-import java.security.cert.Certificate;
 
 public class QuizActivity extends AppCompatActivity {
 
@@ -25,7 +23,8 @@ public class QuizActivity extends AppCompatActivity {
   private ImageButton mNextButton;
   private ImageButton mPreviousButton;
   private TextView mQuestionTextView;
-  private TextView mCheatbutton;
+  private TextView mCheatButton;
+  private int cheatsNum = 0;
 
   private Question[] mQuestionBank = new Question[]{
       new Question(R.string.question_australia, true),
@@ -45,11 +44,11 @@ public class QuizActivity extends AppCompatActivity {
     setContentView(R.layout.activity_quiz);
 
     if (savedInstanceState != null) {
-      mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+      mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 1);
     }
 
     mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
-    //int question = mQuestionBank[mCurrentIndex].getmTextResId();
+    //int question = mQuestionBank[mCurrentIndex].getTextResId();
     //mQuestionTextView.setText(question);
 
     mTrueButton = (Button) findViewById(R.id.true_button);
@@ -75,22 +74,24 @@ public class QuizActivity extends AppCompatActivity {
       public void onClick(View v) {
         mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
         mIsCheater = false;
-        //int question = mQuestionBank[mCurrentIndex].getmTextResId();
+        //int question = mQuestionBank[mCurrentIndex].getTextResId();
         //mQuestionTextView.setText(question);
-        updateQuestion();
       }
     });
 
-    mCheatbutton = (Button) findViewById(R.id.cheat_button);
-    mCheatbutton.setOnClickListener(new View.OnClickListener(){
+    mCheatButton = (Button) findViewById(R.id.cheat_button);
+    mCheatButton.setOnClickListener(new View.OnClickListener(){
       @Override
       public void onClick(View v) {
-        boolean answerIsTrue = mQuestionBank[mCurrentIndex].ismAnswerTrue();
-        Intent intent = CheatActivty.newIntent(QuizActivity.this, answerIsTrue);
+        boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
+        Intent intent = new Intent(QuizActivity.this, CheatActivty.class);
+        Bundle extras = new Bundle();
+        extras.putBoolean("ANSWER", answerIsTrue);
+        extras.putInt("NUM_CHEATS", cheatsNum);
+        intent.putExtras(extras);
         startActivityForResult(intent, REQUEST_CODE_CHEAT);
       }
     });
-
     updateQuestion();
 
     mPreviousButton = (ImageButton) findViewById(R.id.previous_button);
@@ -108,7 +109,7 @@ public class QuizActivity extends AppCompatActivity {
   }
 
   @Override
-  protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (resultCode != Activity.RESULT_OK) {
       return;
     }
@@ -160,24 +161,28 @@ public class QuizActivity extends AppCompatActivity {
 
 
   private void updateQuestion() {
-    int question = mQuestionBank[mCurrentIndex].getmTextResId();
+    int question = mQuestionBank[mCurrentIndex].getTextResId();
     mQuestionTextView.setText(question);
   }
 
   private void checkAnswer(boolean userPressedTrue) {
-    boolean answerIsTrue = mQuestionBank[mCurrentIndex].ismAnswerTrue();
+    boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
 
     int messageResId = 0;
+
     if (mIsCheater) {
+      cheatsNum++;
+      if (cheatsNum >= 3) {
+        mCheatButton.setEnabled(false);
+      }
       messageResId = R.string.judgement_toast;
     } else {
-
       if (userPressedTrue == answerIsTrue) {
         messageResId = R.string.correct_toast;
       } else {
         messageResId = R.string.incorrect_toast;
       }
-      Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
     }
+    Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
   }
 }
